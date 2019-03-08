@@ -46,8 +46,12 @@ size_t required_mechanism_size() {
   mech_size += REACTION_RATES;
   //cooling_rates
   mech_size += COOLING_RATES;
+  // drate_dT
+  mech_size += REACTION_RATES;
+  // dcrate_dT
+  mech_size += COOLING_RATES;
   //jac; which is not used here YET!
-  // mech_size += NN * NN;
+  mech_size += NSP * NSP;
   //temperature
   mech_size += 1;
   // density
@@ -83,8 +87,13 @@ void initialize_gpu_memory(int padded, mechanism_memory** h_mem, mechanism_memor
 
   cudaErrorCheck( cudaMalloc(&((*h_mem)->var), 1 * padded * sizeof(double)) );
   cudaErrorCheck( cudaMalloc(&((*h_mem)->chemistry_data), sizeof( cvklu_data ) )); 
-  //jacobian is not needed yet: cudaErrorCheck( cudaMalloc(&((*h_mem)->jac), NSP * NSP * padded * sizeof(double)) );
-  
+  //jacobian is not needed yet: 
+  cudaErrorCheck( cudaMalloc(&((*h_mem)->jac), NSP * NSP * padded * sizeof(double)) );
+  cudaErrorCheck( cudaMalloc(&((*h_mem)->drrate_dT), REACTION_RATES * padded * sizeof(double)) );
+  cudaErrorCheck( cudaMalloc(&((*h_mem)->dcrate_dT), COOLING_RATES  * padded * sizeof(double)) );
+  cudaErrorCheck( cudaMalloc(&((*h_mem)->dTs_ge), padded * sizeof(double)) );
+  cudaErrorCheck( cudaMalloc(&((*h_mem)->h2_optical_depth_approx), padded * sizeof(double)) );
+ 
   // initialize the arrays with values
   cudaErrorCheck( cudaMemset((*h_mem)->y,1.0, NSP * padded * sizeof(double)) );
   cudaErrorCheck( cudaMemset((*h_mem)->dy, 0, NSP * padded * sizeof(double)) );

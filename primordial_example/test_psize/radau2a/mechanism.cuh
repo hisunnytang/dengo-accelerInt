@@ -7,7 +7,7 @@
 #include <helper_cuda.h>
 #include "launch_bounds.cuh"
 #include "gpu_macros.cuh"
-#include "cvklu_solver.h"
+#include "dengo_solver.h"
 #endif
 //last_spec 8
 /* Species Indexes
@@ -79,6 +79,11 @@ struct mechanism_memory {
   double *scale;
   double *inv_scale;
   double *temp_array;
+  double *jac;
+  double *drrate_dT;
+  double *dcrate_dT;
+  double *h2_optical_depth_approx;
+  double *dTs_ge;
 };
 
 

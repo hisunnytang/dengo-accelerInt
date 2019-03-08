@@ -46,218 +46,6 @@
 #endif
 
 
-void cvklu_read_rate_tables(cvklu_data *data)
-{
-    const char * filedir;
-    if (data->dengo_data_file != NULL){
-        filedir =  data->dengo_data_file; 
-    } else{
-        filedir = "cvklu_tables.h5";   
-    }
-
-    hid_t file_id = H5Fopen( filedir , H5F_ACC_RDONLY, H5P_DEFAULT);
-    /* Allocate the correct number of rate tables */
-    H5LTread_dataset_double(file_id, "/k01", data->r_k01);
-    H5LTread_dataset_double(file_id, "/k02", data->r_k02);
-    H5LTread_dataset_double(file_id, "/k03", data->r_k03);
-    H5LTread_dataset_double(file_id, "/k04", data->r_k04);
-    H5LTread_dataset_double(file_id, "/k05", data->r_k05);
-    H5LTread_dataset_double(file_id, "/k06", data->r_k06);
-    H5LTread_dataset_double(file_id, "/k07", data->r_k07);
-    H5LTread_dataset_double(file_id, "/k08", data->r_k08);
-    H5LTread_dataset_double(file_id, "/k09", data->r_k09);
-    H5LTread_dataset_double(file_id, "/k10", data->r_k10);
-    H5LTread_dataset_double(file_id, "/k11", data->r_k11);
-    H5LTread_dataset_double(file_id, "/k12", data->r_k12);
-    H5LTread_dataset_double(file_id, "/k13", data->r_k13);
-    H5LTread_dataset_double(file_id, "/k14", data->r_k14);
-    H5LTread_dataset_double(file_id, "/k15", data->r_k15);
-    H5LTread_dataset_double(file_id, "/k16", data->r_k16);
-    H5LTread_dataset_double(file_id, "/k17", data->r_k17);
-    H5LTread_dataset_double(file_id, "/k18", data->r_k18);
-    H5LTread_dataset_double(file_id, "/k19", data->r_k19);
-    H5LTread_dataset_double(file_id, "/k21", data->r_k21);
-    H5LTread_dataset_double(file_id, "/k22", data->r_k22);
-    
-    H5Fclose(file_id);
-}
-
-
-void cvklu_read_cooling_tables(cvklu_data *data)
-{
-
-    const char * filedir;
-    if (data->dengo_data_file != NULL){
-        filedir =  data->dengo_data_file; 
-    } else{
-        filedir = "cvklu_tables.h5";   
-    }
-    hid_t file_id = H5Fopen( filedir , H5F_ACC_RDONLY, H5P_DEFAULT);
-    /* Allocate the correct number of rate tables */
-    H5LTread_dataset_double(file_id, "/brem_brem",
-                            data->c_brem_brem);
-    H5LTread_dataset_double(file_id, "/ceHeI_ceHeI",
-                            data->c_ceHeI_ceHeI);
-    H5LTread_dataset_double(file_id, "/ceHeII_ceHeII",
-                            data->c_ceHeII_ceHeII);
-    H5LTread_dataset_double(file_id, "/ceHI_ceHI",
-                            data->c_ceHI_ceHI);
-    H5LTread_dataset_double(file_id, "/cie_cooling_cieco",
-                            data->c_cie_cooling_cieco);
-    H5LTread_dataset_double(file_id, "/ciHeI_ciHeI",
-                            data->c_ciHeI_ciHeI);
-    H5LTread_dataset_double(file_id, "/ciHeII_ciHeII",
-                            data->c_ciHeII_ciHeII);
-    H5LTread_dataset_double(file_id, "/ciHeIS_ciHeIS",
-                            data->c_ciHeIS_ciHeIS);
-    H5LTread_dataset_double(file_id, "/ciHI_ciHI",
-                            data->c_ciHI_ciHI);
-    H5LTread_dataset_double(file_id, "/compton_comp_",
-                            data->c_compton_comp_);
-    H5LTread_dataset_double(file_id, "/gammah_gammah",
-                            data->c_gammah_gammah);
-    H5LTread_dataset_double(file_id, "/gloverabel08_gael",
-                            data->c_gloverabel08_gael);
-    H5LTread_dataset_double(file_id, "/gloverabel08_gaH2",
-                            data->c_gloverabel08_gaH2);
-    H5LTread_dataset_double(file_id, "/gloverabel08_gaHe",
-                            data->c_gloverabel08_gaHe);
-    H5LTread_dataset_double(file_id, "/gloverabel08_gaHI",
-                            data->c_gloverabel08_gaHI);
-    H5LTread_dataset_double(file_id, "/gloverabel08_gaHp",
-                            data->c_gloverabel08_gaHp);
-    H5LTread_dataset_double(file_id, "/gloverabel08_gphdl",
-                            data->c_gloverabel08_gphdl);
-    H5LTread_dataset_double(file_id, "/gloverabel08_gpldl",
-                            data->c_gloverabel08_gpldl);
-    H5LTread_dataset_double(file_id, "/gloverabel08_h2lte",
-                            data->c_gloverabel08_h2lte);
-    H5LTread_dataset_double(file_id, "/h2formation_h2mcool",
-                            data->c_h2formation_h2mcool);
-    H5LTread_dataset_double(file_id, "/h2formation_h2mheat",
-                            data->c_h2formation_h2mheat);
-    H5LTread_dataset_double(file_id, "/h2formation_ncrd1",
-                            data->c_h2formation_ncrd1);
-    H5LTread_dataset_double(file_id, "/h2formation_ncrd2",
-                            data->c_h2formation_ncrd2);
-    H5LTread_dataset_double(file_id, "/h2formation_ncrn",
-                            data->c_h2formation_ncrn);
-    H5LTread_dataset_double(file_id, "/reHeII1_reHeII1",
-                            data->c_reHeII1_reHeII1);
-    H5LTread_dataset_double(file_id, "/reHeII2_reHeII2",
-                            data->c_reHeII2_reHeII2);
-    H5LTread_dataset_double(file_id, "/reHeIII_reHeIII",
-                            data->c_reHeIII_reHeIII);
-    H5LTread_dataset_double(file_id, "/reHII_reHII",
-                            data->c_reHII_reHII);
-
-    H5Fclose(file_id);
-}
-
-void cvklu_read_gamma(cvklu_data *data)
-{
-
-    const char * filedir;
-    if (data->dengo_data_file != NULL){
-        filedir =  data->dengo_data_file; 
-    } else{
-        filedir = "cvklu_tables.h5";   
-    }
-    
-    hid_t file_id = H5Fopen( filedir , H5F_ACC_RDONLY, H5P_DEFAULT);
-    /* Allocate the correct number of rate tables */
-    H5LTread_dataset_double(file_id, "/gammaH2_1",
-                            data->g_gammaH2_1 );
-    H5LTread_dataset_double(file_id, "/dgammaH2_1_dT",
-                            data->g_dgammaH2_1_dT );   
-    
-    H5LTread_dataset_double(file_id, "/gammaH2_2",
-                            data->g_gammaH2_2 );
-    H5LTread_dataset_double(file_id, "/dgammaH2_2_dT",
-                            data->g_dgammaH2_2_dT );   
-    
-
-    H5Fclose(file_id);
-
-}
-
-
-cvklu_data *cvklu_setup_data( const char *FileLocation, int *NumberOfFields, char ***FieldNames)
-{
-
-    //-----------------------------------------------------
-    // Function : cvklu_setup_data
-    // Description: Initialize a data object that stores the reaction/ cooling rate data 
-    //-----------------------------------------------------
-
-    int i, n;
-    
-    cvklu_data *data = (cvklu_data *) malloc(sizeof(cvklu_data));
-    
-    // point the module to look for cvklu_tables.h5
-    data->dengo_data_file = FileLocation;
-
-    /* allocate space for the scale related pieces */
-
-    // Number of cells to be solved in a batch 
-    data->nstrip = MAX_NCELLS;
-
-
-    /* Temperature-related pieces */
-    data->bounds[0] = 1.0;
-    data->bounds[1] = 100000.0;
-    data->nbins = 1024 - 1;
-    data->dbin = (log(data->bounds[1]) - log(data->bounds[0])) / data->nbins;
-    data->idbin = 1.0L / data->dbin;
-
-    /* Redshift-related pieces */
-    data->z_bounds[0] = 0.0;
-    data->z_bounds[1] = 0.0;
-    data->n_zbins = 0 - 1;
-    data->d_zbin = (log(data->z_bounds[1] + 1.0) - log(data->z_bounds[0] + 1.0)) / data->n_zbins;
-    data->id_zbin = 1.0L / data->d_zbin;
-    
-    cvklu_read_rate_tables(data);
-    //fprintf(stderr, "Successfully read in rate tables.\n");
-
-    cvklu_read_cooling_tables(data);
-    //fprintf(stderr, "Successfully read in cooling rate tables.\n");
-    
-    cvklu_read_gamma(data);
-    //fprintf(stderr, "Successfully read in gamma tables. \n");
-
-    if (FieldNames != NULL && NumberOfFields != NULL) {
-        NumberOfFields[0] = 10;
-        FieldNames[0] = new char*[10];
-        i = 0;
-        
-        FieldNames[0][i++] = strdup("H2_1");
-        
-        FieldNames[0][i++] = strdup("H2_2");
-        
-        FieldNames[0][i++] = strdup("H_1");
-        
-        FieldNames[0][i++] = strdup("H_2");
-        
-        FieldNames[0][i++] = strdup("H_m0");
-        
-        FieldNames[0][i++] = strdup("He_1");
-        
-        FieldNames[0][i++] = strdup("He_2");
-        
-        FieldNames[0][i++] = strdup("He_3");
-        
-        FieldNames[0][i++] = strdup("de");
-        
-        FieldNames[0][i++] = strdup("ge");
-        
-    }
-
-    data->dengo_data_file = NULL;
-
-    return data;
-
-}
 
 /**
  * \brief Writes state vectors to file
@@ -374,10 +162,11 @@ int main (int argc, char *argv[])
 #endif
     /** Number of independent systems */
     int NUM = 1;
-    
+    double density = 1.0e4; // cm**-3
+    double temperature = 2000.0; // K    
     cudaProfilerStart();
     // check for problem size given as command line option
-    if (argc > 1)
+    if (argc > 2)
     {
         int problemsize = NUM;
         if (sscanf(argv[1], "%i", &problemsize) != 1 || (problemsize <= 0))
@@ -387,8 +176,45 @@ int main (int argc, char *argv[])
             exit(1);
         }
         NUM = problemsize;
+
+        double rho = density;
+        rho = atof(argv[2]);
+        if ( rho <= 0)
+        {
+            printf("Error: density not in correct range\n");
+            printf("Provide number greater than 0\n");
+            exit(1);
+        }
+        density = rho;
+
+        double T   = temperature;
+        T  = atof(argv[3]);
+        if (  T <= 0 )
+        {
+            printf("Error: temperature not in correct range\n");
+            printf("Provide number greater than 0\n");
+            exit(1);
+        }
+        temperature = T;
+        printf("using user_specified test parameter\n");
+        printf("NUM = %d \n",NUM);
+        printf("density = %0.5g \n", density);
+        printf("temperature = %0.5g\n", temperature);
+
+    } else{ 
+        printf("no input specified...");
+        printf("using default test parameter");
+        printf("NUM = %d \n",NUM);
+        printf("density = %0.5g \n", density);
+        printf("temperature = %0.5g\n", temperature);
     }
 
+    // set & initialize device using command line argument (if any)
+    cudaDeviceProp devProp;
+    cudaErrorCheck (cudaSetDevice (0) );
+    cudaErrorCheck (cudaGetDeviceProperties(&devProp, 0));
+    
+/*
     // set & initialize device using command line argument (if any)
     cudaDeviceProp devProp;
     if (argc <= 2)
@@ -419,6 +245,8 @@ int main (int argc, char *argv[])
         }
         cudaErrorCheck (cudaGetDeviceProperties(&devProp, id));
     }
+*/
+
     cudaErrorCheck( cudaDeviceReset() );
     cudaErrorCheck( cudaPeekAtLastError() );
     cudaErrorCheck( cudaDeviceSynchronize() );
@@ -461,7 +289,26 @@ int main (int argc, char *argv[])
 
     double* y_host;
     double* var_host;
-    set_same_initial_conditions(NUM, &y_host, &var_host);
+    dengo_set_initial_conditions( density, temperature, NUM, &y_host, &var_host);
+    double t0 = 2.992e15;
+    double end_time = t0 / sqrt( density );
+    double t_step = end_time;
+    printf("end_time: %0.5g \n", end_time );
+
+
+    double *temperature_array;
+    double *density_array;
+    double *h2_optical_depth_array;
+    dengo_set_additional_constant(density, temperature, NUM, &y_host, 
+                                 &temperature_array, &density_array, &h2_optical_depth_array ); 
+    double* temp_temp = 0;
+    temp_temp = (double*)malloc(padded * sizeof(double));
+    double* density_temp = 0;
+    density_temp = (double*)malloc(padded * sizeof(double));
+    double* h2_optical_depth_temp = 0;
+    h2_optical_depth_temp = (double*)malloc(padded * sizeof(double));
+
+
 
     #ifdef SCALE_INPUT
     double* _y_host;
@@ -500,10 +347,6 @@ int main (int argc, char *argv[])
     }
     #endif
 
-    double t0 = 2.992e15;
-    double end_time = t0 / sqrt( 1.0e13 );
-    double t_step = end_time;
-    printf("end_time: %0.5g \n", end_time );
     //////////////////////////////
     // start timer
     StartTimer();
@@ -531,6 +374,14 @@ int main (int argc, char *argv[])
             memcpy2D_in(y_temp, padded, y_host, NUM,
                             num_solved, num_cond * sizeof(double), NSP);
 
+            memcpy2D_in(temp_temp, padded, temperature_array, NUM,
+                            num_solved, num_cond * sizeof(double), 1);
+            memcpy2D_in(density_temp, padded, density_array, NUM,
+                            num_solved, num_cond * sizeof(double), 1);
+            memcpy2D_in(h2_optical_depth_temp, padded, h2_optical_depth_array, NUM,
+                            num_solved, num_cond * sizeof(double), 1);
+
+
 	    // 
 
             #ifdef SCALE_INPUT
@@ -552,6 +403,20 @@ int main (int argc, char *argv[])
                                             num_cond * sizeof(double), NSP,
                                             cudaMemcpyHostToDevice) );
 
+            cudaErrorCheck( cudaMemcpy2D (host_mech->temperature, padded * sizeof(double),
+                                            temp_temp, padded * sizeof(double),
+                                            num_cond * sizeof(double), 1,
+                                            cudaMemcpyHostToDevice) );
+            cudaErrorCheck( cudaMemcpy2D (host_mech->density, padded * sizeof(double),
+                                            density_temp, padded * sizeof(double),
+                                            num_cond * sizeof(double), 1,
+                                            cudaMemcpyHostToDevice) );
+            cudaErrorCheck( cudaMemcpy2D (host_mech->h2_optical_depth_approx, padded * sizeof(double),
+                                            h2_optical_depth_temp, padded * sizeof(double),
+                                            num_cond * sizeof(double), 1,
+                                            cudaMemcpyHostToDevice) );
+
+
          
             cudaErrorCheck( cudaMemcpy( device_mech, host_mech, sizeof(mechanism_memory), cudaMemcpyHostToDevice) );
 
@@ -566,6 +431,22 @@ int main (int argc, char *argv[])
                                             y_temp, padded * sizeof(double),
                                             num_cond * sizeof(double), NSP,
                                             cudaMemcpyHostToDevice) );
+
+            cudaErrorCheck( cudaMemcpy2D (host_mech->temperature, padded * sizeof(double),
+                                            temp_temp, padded * sizeof(double),
+                                            num_cond * sizeof(double), 1,
+                                            cudaMemcpyHostToDevice) );
+            cudaErrorCheck( cudaMemcpy2D (host_mech->density, padded * sizeof(double),
+                                            density_temp, padded * sizeof(double),
+                                            num_cond * sizeof(double), 1,
+                                            cudaMemcpyHostToDevice) );
+            cudaErrorCheck( cudaMemcpy2D (host_mech->h2_optical_depth_approx, padded * sizeof(double),
+                                            h2_optical_depth_temp, padded * sizeof(double),
+                                            num_cond * sizeof(double), 1,
+                                            cudaMemcpyHostToDevice) );
+
+            cudaErrorCheck( cudaMemcpy( device_mech, host_mech, sizeof(mechanism_memory), cudaMemcpyHostToDevice) );
+
             #endif
 
             intDriver <<< dimGrid, dimBlock, SHARED_SIZE >>> (num_cond, t, t_next, host_mech->var, host_mech->y, device_mech, device_solver);

@@ -26,7 +26,7 @@ Real rkc_spec_rad (const Real t, const Real pr, const Real hmax, const Real* y,
     * @param Fv
     */
 
-    const int itmax = 500;
+    const int itmax = 10;
     Real small = ONE / hmax;
 
     //for (int i = 0; i < NSP; ++i) {
@@ -206,7 +206,6 @@ __device__ void integrate (const Real tstart,
     * @param mech   The mechanism_memory struct that contains the pre-allocated memory for the RHS \ Jacobian evaluation
     * @param solver The solver_memory struct that contains the pre-allocated memory for the solver
     */
-
     Real t = tstart;
     int nstep = 0;
     int mMax = (int)(round(sqrt(RTOL / (10.0 * UROUND))));
@@ -324,10 +323,14 @@ __device__ void integrate (const Real tstart,
             // reevaluate spectral radius
             //spec_rad = rkc_spec_rad (t, pr, y_n, F_n, temp_arr, temp_arr2);
             work[INDEX(3)] = rkc_spec_rad (t, pr, stepSizeMax, y_n, F_n, &work[GRID_DIM * 4], temp_arr2, mech);
+
+        //    printf("REJECTED!!! t = %0.5g; dt = %0.5g; nsteps = %d\n", t, work[INDEX(2)], nstep);
         } else {
             // step accepted
             t += work[INDEX(2)];
             nstep++;
+
+        //    printf("t = %0.5g; dt = %0.5g; nsteps = %d\n", t, work[INDEX(2)], nstep);
 
             Real fac = TEN;
             Real temp1, temp2;
@@ -362,6 +365,8 @@ __device__ void integrate (const Real tstart,
                 // only perform one step
                 return;
             }*/
+
+
         }
 
     }
