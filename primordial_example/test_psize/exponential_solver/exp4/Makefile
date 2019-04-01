@@ -17,14 +17,13 @@ EXP4_DIR  = exp4_integrator
 UTIL_DIR  = utilities
 SOLV_DIR  = solver_generic
 
-OBJECTS=$(wildcard out/*.o)
 all:
 	mkdir -p out
 	+$(MAKE) -C $(DENGO_DIR)
 	+$(MAKE) -C $(EXP4_DIR)
 	+$(MAKE) -C $(SOLV_DIR)
 	+$(MAKE) -C $(UTIL_DIR)
-	$(NVCC) $(OBJECTS) $(LIBDIRS) $(LIBS) -dlink -o exp4-int-gpu-dlink.o 
-	gcc -fPIC -fopenmp -Xlinker -rpath /usr/local/cuda/lib64 $(OBJECTS) exp4-int-gpu-dlink.o  $(LIBDIRS) $(LIBS) -o exp4-int-gpu 
+	$(NVCC) $(wildcard out/*.o) $(LIBDIRS) $(LIBS) -dlink -o exp4-int-gpu-dlink.o 
+	gcc -fPIC -fopenmp -Xlinker -rpath /usr/local/cuda/lib64 $(wildcard out/*.o) exp4-int-gpu-dlink.o  $(LIBDIRS) $(LIBS) -lfftw3 -o exp4-int-gpu 
 clean:
 	rm -f out/*o

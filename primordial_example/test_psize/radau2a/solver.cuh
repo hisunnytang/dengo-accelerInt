@@ -38,6 +38,13 @@ __device__ void integrate (const double,
 __host__
 void check_error(int num_conditions, int* code_arr);
 
+ __global__
+void checkModules (const int NUM,
+                const double t,
+                const mechanism_memory * __restrict__ d_mem );
+
+
+
 #ifdef GENERATE_DOCS
  }
 #endif

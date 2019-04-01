@@ -16,7 +16,7 @@
 namespace exp4cu {
 #endif
 
-//#define USE_SMOOTHED_ERROR // if defined, uses (I - h * Hm)^-1 to smooth the krylov error vector
+#define USE_SMOOTHED_ERROR // if defined, uses (I - h * Hm)^-1 to smooth the krylov error vector
 
 //! max order of the phi functions (for error estimation)
 #define P 1

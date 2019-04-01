@@ -64,7 +64,7 @@
 //We dont distinguish fwd/ rev rates
 //We have only reaction and cooling rates
 #define REACTION_RATES 23
-#define COOLING_RATES 26
+#define COOLING_RATES 27
 
 struct mechanism_memory {
   double * y;
@@ -84,6 +84,8 @@ struct mechanism_memory {
   double *dcrate_dT;
   double *h2_optical_depth_approx;
   double *dTs_ge;
+  int *rhs_call;
+  int *jac_call;
 };
 
 

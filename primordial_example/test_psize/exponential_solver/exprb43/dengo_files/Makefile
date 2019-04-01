@@ -15,7 +15,7 @@ OBJECTS = $(patsubst %.C, %.o, $(TMP))
 
 
 ../out/%.cu.o: %.cu  
-	$(NVCC) $(INCDIRS) $(CUDAFLAGS) -c $< -o $@ $(LIBDIRS) $(LIBS) -DRB43 -DSCALE_INPUT 
+	$(NVCC) $(INCDIRS) $(CUDAFLAGS) -c $< -o $@ $(LIBDIRS) $(LIBS) -DRB43 
 
 ../out/%.o: %.C  
 	$(CC) $(INCDIRS) $(CXXFLAGS) -c $< -o $@ $(LIBDIRS) $(LIBS)

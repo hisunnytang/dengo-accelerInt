@@ -9,50 +9,6 @@
 #include "gpu_macros.cuh"
 #include "dengo_solver.h"
 #endif
-//last_spec 8
-/* Species Indexes
-0  H
-1  H2
-2  O
-3  OH
-4  H2O
-5  O2
-6  HO2
-7  H2O2
-8  AR
-9  HE
-10  CO
-11  CO2
-12  N2
-*/
-
-/*
-//Number of species
-#define NSP 13
-//Number of variables. NN = NSP + 1 (temperature)
-#define NN 14
-//Number of forward reactions
-#define FWD_RATES 27
-//Number of reversible reactions
-#define REV_RATES 27
-//Number of reactions with pressure modified rates
-#define PRES_MOD_RATES 6
-*/
-
-
-
-/* Species Indexes
-0  H2_1
-1  H2_2
-2  H_1
-3  H_2
-4  H_m0
-5  He_1
-6  He_2
-7  He_3
-8  de
-9  ge
-*/
 
 // should also print the reactions here 
 // or separate files

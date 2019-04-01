@@ -593,14 +593,12 @@ __device__ void dydt (const double t, const double pres, const double * __restri
   }
 */
 
-/*
   if ( T_ID == 0 ){
     printf("time = %0.5g, at temp = %0.5g\n", t, T_local);
     for (int i = 0; i< 10; i++){
       printf("from tid[%d]: dy[%d] = %0.5g, y = %0.5g at t = %0.5g \n", T_ID, i, dy[INDEX(i)], y_in[INDEX(i)], t);
     }
   }
-*/
 
 //  printf(" \n");
 //  }

@@ -1,6 +1,7 @@
 #include "header.cuh"
 #include "gpu_memory.cuh"
 
+
 __device__ void interpolate_gamma( cvklu_data *rate_data, double T, double *gamma, double *dgamma_dT )
 {
   int tid, bin_id, zbin_id;
@@ -28,7 +29,6 @@ __device__ void interpolate_gamma( cvklu_data *rate_data, double T, double *gamm
 }
 
 
-
 __device__ void evaluate_temperature( double* T, double* dTs_ge, const double *y, const double mdensity, cvklu_data *rate_data )
 {
    // iterate temperature to convergence
@@ -40,9 +40,11 @@ __device__ void evaluate_temperature( double* T, double* dTs_ge, const double *y
   int MAX_ITERATION = 100; 
   double gamma     = 5./3.;
   double _gamma_m1 = 1.0 / (gamma - 1.0);
-  double kb = 1.2806504e-16; // Boltzamann constant [erg/K] 
+  double kb = 1.3806504e-16; // Boltzamann constant [erg/K] 
   // prepare t, tnew for the newton's iteration;
+
   t     = *T;
+  if (t != t) t = 1000.0;
   tnew  = 1.1*t;
   tdiff = tnew - t;
  
@@ -67,8 +69,8 @@ __device__ void evaluate_temperature( double* T, double* dTs_ge, const double *y
     if (count > MAX_ITERATION){
       printf("T[tid = %d] failed to converge (iteration: %d); at T = %0.3g \n", T_ID, count, tnew );
     }
-    if (t != t && T_ID == 0){
-      printf("T[tid = %d] is NaN, count = %d; ge = %0.5g, gamma_H2 = %0.5g \n", T_ID, count, y[INDEX(9)], gammaH2);
+    if ( t!= t && T_ID == 0){
+      printf("T[tid = %d] is %0.5g, count = %d; ge = %0.5g, gamma_H2 = %0.5g \n", T_ID, t, count, y[INDEX(9)], gammaH2);
       t = 1000.0;
       for (int i = 0; i < 10; i++){
           printf("y[INDEX(%d)] = %0.5g \n", i, y[INDEX(i)]);
@@ -84,7 +86,6 @@ __device__ void evaluate_temperature( double* T, double* dTs_ge, const double *y
   // printf("T[tid = %d] is %0.5g, count = %d; ge = %0.5g, gamma_H2 = %0.5g \n", tid, t, count, y[INDEX(9)], gammaH2);
   
 }
-
 
 
 __device__ void interpolate_reaction_rates( double *reaction_rates_out, double temp_out, cvklu_data *rate_data)
@@ -506,45 +507,48 @@ __device__ void interpolate_drrate_dT(double *drr_dT, const double temp_out, cvk
 }
 
 
-__device__ void dydt (const double t, const double pres, const double * __restrict__ y_in, double * __restrict__ dy, const mechanism_memory * __restrict__ d_mem) {
+__device__ void dydt (const double t, const double pres, const double * __restrict__ y_in, double * __restrict__ dy, const mechanism_memory * d_mem) {
 
 
   int tid = threadIdx.x + blockDim.x * blockIdx.x;
 //  int NSPECIES = 10;
-  int NRATE    = 23;
-  int NCOOL    = 26;
+  const int NRATE    = 23;
+  const int NCOOL    = 26;
 
-  double * __restrict__ local_reaction_rates = d_mem->reaction_rates;
-  double * __restrict__ local_cooling_rates  = d_mem->cooling_rates ;
+  double * local_reaction_rates = d_mem->reaction_rates;
+  double * local_cooling_rates  = d_mem->cooling_rates ;
 
   // scale related piece
-  double * __restrict__ y = d_mem->temp_array; // working space for scaling the variable back;
-  double * __restrict__ scale = d_mem->scale;
-  double * __restrict__ inv_scale = d_mem->inv_scale;
+  double * y = d_mem->temp_array; // working space for scaling the variable back;
+
   cvklu_data *rate_data = d_mem->chemistry_data;
 
   // these should be retreieved from d_mem object
   double T_local  = d_mem->temperature[T_ID];
   double Tge      = d_mem->dTs_ge[T_ID];
 
-  double mdensity = d_mem->density[T_ID];
-  double inv_mdensity = 1.0 / mdensity;
-  double h2_optical_depth_approx = d_mem->h2_optical_depth_approx[T_ID];
+  const double mdensity = d_mem->density[T_ID];
+  const double inv_mdensity = 1.0 / mdensity;
+  const double h2_optical_depth_approx = d_mem->h2_optical_depth_approx[T_ID];
 
 
   // scaling the input vector back to cgs units
   #ifdef SCALE_INPUT
+  const double * __restrict__ scale = d_mem->scale;
+  const double * __restrict__ inv_scale = d_mem->inv_scale;
+  #pragma unroll
   for (int i = 0; i < 10; i++){
     y[INDEX(i)] = y_in[INDEX(i)]*scale[INDEX(i)];
     // printf( "y_in[%d] = %0.5g; scale[%d] = %0.5g\n", i, y_in[INDEX(i)], i, scale[INDEX(i)] );
   }
   #else
+  #pragma unroll
   for (int i = 0; i < 10; i++){
     y[INDEX(i)] = y_in[INDEX(i)];
   }
   #endif
   
-  evaluate_temperature ( &T_local, &Tge, y, mdensity, rate_data );
+  evaluate_temperature ( &T_local, &Tge, y , mdensity, rate_data );
   interpolate_reaction_rates( local_reaction_rates, T_local, rate_data);
   interpolate_cooling_rates ( local_cooling_rates , T_local, rate_data);
 
@@ -568,13 +572,18 @@ __device__ void dydt (const double t, const double pres, const double * __restri
   //# 8: de
   dy[INDEX(8)] = local_reaction_rates[INDEX(0)]*y[INDEX(2)]*y[INDEX(8)] - local_reaction_rates[INDEX(1)]*y[INDEX(3)]*y[INDEX(8)] + local_reaction_rates[INDEX(2)]*y[INDEX(5)]*y[INDEX(8)] - local_reaction_rates[INDEX(3)]*y[INDEX(6)]*y[INDEX(8)] + local_reaction_rates[INDEX(4)]*y[INDEX(6)]*y[INDEX(8)] - local_reaction_rates[INDEX(5)]*y[INDEX(7)]*y[INDEX(8)] - local_reaction_rates[INDEX(6)]*y[INDEX(2)]*y[INDEX(8)] + local_reaction_rates[INDEX(7)]*y[INDEX(2)]*y[INDEX(4)] + local_reaction_rates[INDEX(13)]*y[INDEX(4)]*y[INDEX(8)] + local_reaction_rates[INDEX(14)]*y[INDEX(2)]*y[INDEX(4)] + local_reaction_rates[INDEX(16)]*y[INDEX(3)]*y[INDEX(4)] - local_reaction_rates[INDEX(17)]*y[INDEX(1)]*y[INDEX(8)];
   //# 9: ge
+  dy[INDEX(9)] = -2.01588*y[INDEX(0)]*local_cooling_rates[INDEX(25)]*local_cooling_rates[INDEX(26)]*mdensity - y[INDEX(0)]*local_cooling_rates[INDEX(26)]*local_cooling_rates[INDEX(17)]*h2_optical_depth_approx/(local_cooling_rates[INDEX(17)]/(y[INDEX(0)]*local_cooling_rates[INDEX(13)] + y[INDEX(2)]*local_cooling_rates[INDEX(12)] + y[INDEX(3)]*local_cooling_rates[INDEX(15)] + y[INDEX(5)]*local_cooling_rates[INDEX(14)] + y[INDEX(8)]*local_cooling_rates[INDEX(16)]) + 1.0) - y[INDEX(2)]*local_cooling_rates[INDEX(0)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)] - y[INDEX(2)]*local_cooling_rates[INDEX(4)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)] - y[INDEX(3)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)]*local_cooling_rates[INDEX(7)] - y[INDEX(5)]*local_cooling_rates[INDEX(5)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)] - y[INDEX(6)]*local_cooling_rates[INDEX(2)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)] - y[INDEX(6)]*local_cooling_rates[INDEX(1)]*local_cooling_rates[INDEX(26)]*pow(y[INDEX(8)], 2) - y[INDEX(6)]*local_cooling_rates[INDEX(6)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)] - y[INDEX(6)]*local_cooling_rates[INDEX(3)]*local_cooling_rates[INDEX(26)]*pow(y[INDEX(8)], 2) - y[INDEX(6)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)]*local_cooling_rates[INDEX(8)] - y[INDEX(6)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)]*local_cooling_rates[INDEX(9)] - y[INDEX(7)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)]*local_cooling_rates[INDEX(10)] - local_cooling_rates[INDEX(11)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)]*(y[INDEX(3)] + y[INDEX(6)] + 4.0*y[INDEX(7)]) - local_cooling_rates[INDEX(26)]*local_cooling_rates[INDEX(18)]*y[INDEX(8)]*( T_local - 2.73) + 0.5*1.0/(local_cooling_rates[INDEX(22)]/(y[INDEX(0)]*local_cooling_rates[INDEX(24)] + y[INDEX(2)]*local_cooling_rates[INDEX(23)]) + 1.0)*(-y[INDEX(0)]*y[INDEX(2)]*local_cooling_rates[INDEX(21)] + pow(y[INDEX(2)], 3)*local_cooling_rates[INDEX(20)]);
+
+/*
   dy[INDEX(9)] = -2.01588*y[INDEX(0)]*local_cooling_rates[INDEX(25)]*local_cooling_rates[INDEX(26)]*mdensity - y[INDEX(0)]*local_cooling_rates[INDEX(26)]*local_cooling_rates[INDEX(17)]*h2_optical_depth_approx/(local_cooling_rates[INDEX(17)]/(y[INDEX(0)]*local_cooling_rates[INDEX(13)] + y[INDEX(2)]*local_cooling_rates[INDEX(12)] + y[INDEX(3)]*local_cooling_rates[INDEX(15)] + y[INDEX(5)]*local_cooling_rates[INDEX(14)] + y[INDEX(8)]*local_cooling_rates[INDEX(16)]) + 1.0) - y[INDEX(2)]*local_cooling_rates[INDEX(0)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)] - y[INDEX(2)]*local_cooling_rates[INDEX(4)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)] - y[INDEX(3)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)]*local_cooling_rates[INDEX(7)] - y[INDEX(5)]*local_cooling_rates[INDEX(5)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)] - y[INDEX(6)]*local_cooling_rates[INDEX(2)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)] - y[INDEX(6)]*local_cooling_rates[INDEX(1)]*local_cooling_rates[INDEX(26)]*pow(y[INDEX(8)], 2) - y[INDEX(6)]*local_cooling_rates[INDEX(6)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)] - y[INDEX(6)]*local_cooling_rates[INDEX(3)]*local_cooling_rates[INDEX(26)]*pow(y[INDEX(8)], 2) - y[INDEX(6)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)]*local_cooling_rates[INDEX(8)] - y[INDEX(6)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)]*local_cooling_rates[INDEX(9)] - y[INDEX(7)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)]*local_cooling_rates[INDEX(10)] - local_cooling_rates[INDEX(11)]*local_cooling_rates[INDEX(26)]*y[INDEX(8)]*(y[INDEX(3)] + y[INDEX(6)] + 4.0*y[INDEX(7)]) - local_cooling_rates[INDEX(26)]*local_cooling_rates[INDEX(18)]*y[INDEX(8)]*(T_local - 2.73) + 0.5*1.0/(local_cooling_rates[INDEX(22)]/(y[INDEX(0)]*local_cooling_rates[INDEX(24)] + y[INDEX(2)]*local_cooling_rates[INDEX(23)]) + 1.0)*(-y[INDEX(0)]*y[INDEX(2)]*local_cooling_rates[INDEX(21)] + pow(y[INDEX(2)], 3)*local_cooling_rates[INDEX(20)]);
+*/
   dy[INDEX(9)] *= inv_mdensity;
 
 
 
   #ifdef SCALE_INPUT
   // scaling the dydt vector back to code untis
+  #pragma unroll
   for (int i = 0; i< 10; i++){
     dy[INDEX(i)] *= inv_scale[INDEX(i)];
   }
@@ -582,14 +591,21 @@ __device__ void dydt (const double t, const double pres, const double * __restri
 
 /*
   if ( T_ID == 0 ){
-
-  for (int i = 0; i< 10; i++){
-    printf("from tid[%d]: dy[%d] = %0.5g, y = %0.5g at t = %0.5g \n", T_ID, i, dy[INDEX(i)], y[INDEX(i)], t);
-  }
-
-  printf("time = %0.5g, at temp = %0.5g\n", t, T_local);
-//  printf(" \n");
+    *d_mem->rhs_call += 1;
+    printf("t = %0.5g; rhs_call = %d\n", t, *d_mem->rhs_call );
   }
 */
+
+/*
+  if ( T_ID == 0 ){
+    printf("time = %0.5g, at temp = %0.5g\n", t, T_local);
+    for (int i = 0; i< 10; i++){
+      printf("from tid[%d]: dy[%d] = %0.5g, y = %0.5g at t = %0.5g \n", T_ID, i, dy[INDEX(i)], y_in[INDEX(i)], t);
+    }
+  }
+*/
+
+//  printf(" \n");
+//  }
 }
 

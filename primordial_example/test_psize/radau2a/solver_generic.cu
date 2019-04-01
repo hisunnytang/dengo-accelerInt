@@ -10,6 +10,8 @@
 #include "solver.cuh"
 #include "header.cuh"
 #include "gpu_macros.cuh"
+#include "dydt.cuh"
+#include "jacob.cuh"
 
 #ifdef GENERATE_DOCS
  namespace genericcu {
@@ -40,6 +42,7 @@ void intDriver (const int NUM,
         integrate (t, t_end, pr_global[T_ID], d_mem->y, d_mem, s_mem);
     }
 } // end intDriver
+
 
 #ifdef GENERATE_DOCS
  }

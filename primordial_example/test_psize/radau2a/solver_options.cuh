@@ -19,9 +19,9 @@
         #include <float.h>
 
         /*! Absolute solver tolerance */
-        #define ATOL (1e-10)
+        #define ATOL (1e-8)
         /*! Relative solver tolerance */
-        #define RTOL (1e-6)
+        #define RTOL (1e-4)
         /*! Solver timestep (may be used to force multiple timesteps per global integration step) */
 //        #define t_step (1.0e11)
         /*! Global integration timestep */

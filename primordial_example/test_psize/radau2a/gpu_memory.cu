@@ -93,13 +93,22 @@ void initialize_gpu_memory(int padded, mechanism_memory** h_mem, mechanism_memor
   cudaErrorCheck( cudaMalloc(&((*h_mem)->dcrate_dT), COOLING_RATES  * padded * sizeof(double)) );
   cudaErrorCheck( cudaMalloc(&((*h_mem)->dTs_ge), padded * sizeof(double)) );
   cudaErrorCheck( cudaMalloc(&((*h_mem)->h2_optical_depth_approx), padded * sizeof(double)) );
+
+  // calls to rhs func and jacobian
+  cudaErrorCheck( cudaMalloc(&((*h_mem)->rhs_call), sizeof(int)));
+  cudaErrorCheck( cudaMalloc(&((*h_mem)->jac_call), sizeof(int)));
+
  
   // initialize the arrays with values
   cudaErrorCheck( cudaMemset((*h_mem)->y,1.0, NSP * padded * sizeof(double)) );
   cudaErrorCheck( cudaMemset((*h_mem)->dy, 0, NSP * padded * sizeof(double)) );
+  cudaErrorCheck( cudaMemset((*h_mem)->rhs_call, 0, sizeof(int) )) ;
+  cudaErrorCheck( cudaMemset((*h_mem)->jac_call, 0, sizeof(int) )) ;
+
   cudaErrorCheck( cudaMemset((*h_mem)->temperature, 0, 1 * padded * sizeof(double)) );
   cudaErrorCheck( cudaMemcpy((*h_mem)->chemistry_data, *h_chem_data, sizeof(cvklu_data), cudaMemcpyHostToDevice ));
-  
+ 
+ 
   cudaErrorCheck( cudaMemcpy(*d_mem, *h_mem, sizeof(mechanism_memory), cudaMemcpyHostToDevice) );
 
 

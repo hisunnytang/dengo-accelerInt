@@ -210,8 +210,7 @@ cvklu_data *cvklu_setup_data( const char *FileLocation, int *NumberOfFields, cha
 
 }
 
-
-void dengo_set_initial_conditions( double density, double T0, int NUM, double **y_host, double** var_host ){
+void dengo_set_initial_conditions( double density, double T0, double fH2, int NUM, double **y_host, double** var_host ){
 
 /*
 {'H2_1': array([10000.]),
@@ -232,24 +231,28 @@ void dengo_set_initial_conditions( double density, double T0, int NUM, double **
     double k  = 1.3806488e-16;
     double tiny = 1.0e-20;
 
-
     (*y_host) = (double*)malloc(NUM * NSP * sizeof(double));
     (*var_host) = (double*)malloc(NUM * sizeof(double));
     //load temperature and mass fractions for all threads (cells)
     printf("NUM = %d; NSP = %d \n", NUM, NSP ); 
+    
+    
+    double m_amu = 1.66053904e-24;
+    density *= mH/ m_amu;
+
     int j = 1;
+
     for (int i = 0; i < NUM; ++i) {
-        (*y_host)[i] = T0;
         //loop through species
 	j = 0;
     	// H2I
-	(*y_host)[i + NUM * j] = 1.0e-3* density / 2.0;
+	(*y_host)[i + NUM * j] = 0.76 * fH2 * density / 2.0;
         j += 1;
         // H2II
 	(*y_host)[i + NUM * j] = density * tiny / 2.0;
 	j += 1;
         // HI
-	(*y_host)[i + NUM * j] = 0.76 * density / 1.00794;
+	(*y_host)[i + NUM * j] = 0.76 * (1.0 - fH2)* density / 1.00794 + density * tiny / 1.00794;
 	j += 1;
         // HII
 	(*y_host)[i + NUM * j] = density * tiny / 1.00794;
@@ -276,10 +279,15 @@ void dengo_set_initial_conditions( double density, double T0, int NUM, double **
 
 }
 
+
+
 void dengo_set_additional_constant( double density, double temperature, int NUM, double **y_host, double **temperature_array, double **density_array, double **h2_optical_depth_approx ){
 
     double mH = 1.67e-24;
     double k  = 1.3806488e-16;
+    double m_amu = 1.66053904e-24;
+    density *= mH/ m_amu;
+
 
     (*temperature_array) = (double*)malloc(NUM * sizeof(double));
     (*density_array)     = (double*)malloc(NUM * sizeof(double));
@@ -287,7 +295,7 @@ void dengo_set_additional_constant( double density, double temperature, int NUM,
 
     for (int i = 0; i < NUM; ++i) {
         (*temperature_array)[i] = temperature;
-        (*density_array)    [i] = density * mH;
+        (*density_array)    [i] = 1.0 * density * mH;
         (*h2_optical_depth_approx)[i] = fmin( 1.0, pow(( mH *density / (1.34e-14)), -0.45) ); 
     }
 

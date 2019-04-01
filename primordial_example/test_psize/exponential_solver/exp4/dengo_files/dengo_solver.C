@@ -230,7 +230,7 @@ void dengo_set_initial_conditions( double density, double T0, int NUM, double **
 
     double mH = 1.67e-24;
     double k  = 1.3806488e-16;
-    double tiny = 1.0e-20;
+    double tiny = 1.0e-10;
 
 
     (*y_host) = (double*)malloc(NUM * NSP * sizeof(double));

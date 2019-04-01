@@ -54,7 +54,7 @@ namespace radau2acu {
 //! Maximum number of allowed internal timesteps before error
 #define Max_no_steps (2000000)
 //! Maximum number of allowed Newton iteration steps before error
-#define NewtonMaxit (5)
+#define NewtonMaxit (8)
 //! Use quadratic interpolation from previous step if possible
 #define StartNewton (true)
 //! Use gustafsson time stepping control

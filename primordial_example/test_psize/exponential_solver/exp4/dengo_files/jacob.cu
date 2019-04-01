@@ -41,6 +41,9 @@ __device__ void eval_jacob (const double t, const double pres, const double * __
 
   if (T_ID == 0 ){
     printf("FROM JAC[%ld]: at time = %0.5g, t_local = %0.5g, h2_od: %0.5g\n", T_ID,t, T_local, h2_optical_depth_approx);
+    for (int i = 0; i < 10; i++){
+      printf( "y_in[%d] = %0.5g\n", i, y_in[INDEX(i)] );
+    }
   }
 
 /*

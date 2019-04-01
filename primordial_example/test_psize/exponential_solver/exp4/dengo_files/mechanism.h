@@ -2,35 +2,39 @@
 #define MECHANISM_h
 
 #include <string.h>
-//last_spec 8
-/* Species Indexes
-0  H
-1  H2
-2  O
-3  OH
-4  H2O
-5  O2
-6  HO2
-7  H2O2
-8  AR
-9  HE
-10  CO
-11  CO2
-12  N2
-*/
-
 //Number of species
-#define NSP 13
+#define NSP 10
 //Number of variables. NN = NSP + 1 (temperature)
-#define NN 14
-//Number of forward reactions
-#define FWD_RATES 27
-//Number of reversible reactions
-#define REV_RATES 27
-//Number of reactions with pressure modified rates
-#define PRES_MOD_RATES 6
+#define NN 11
+//We dont distinguish fwd/ rev rates
+//We have only reaction and cooling rates
+#define REACTION_RATES 23
+#define COOLING_RATES 27
 
-//Must be implemented by user on a per mechanism basis in mechanism.c
+struct mechanism_memory {
+  double * y;
+  double * dy;
+  double * reaction_rates;
+  double * cooling_rates;
+  double * temperature;
+  double * density;
+  double * var;
+  const char * rateData_location;
+  cvklu_data * chemistry_data;
+  double *scale;
+  double *inv_scale;
+  double *temp_array;
+  double *jac;
+  double *drrate_dT;
+  double *dcrate_dT;
+  double *h2_optical_depth_approx;
+  double *dTs_ge;
+  int *rhs_call;
+  int *jac_call;
+};
+
+
+//Must be implemented by user on a per mechanism basis in mechanism.cu
 void set_same_initial_conditions(int, double**, double**);
 
 #if defined (RATES_TEST) || defined (PROFILER)

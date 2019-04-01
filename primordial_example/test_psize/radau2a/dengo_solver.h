@@ -104,7 +104,7 @@ void cvklu_read_gamma(cvklu_data *data);
 void cvklu_read_cooling_tables(cvklu_data *data);
 void cvklu_read_rate_tables(cvklu_data *data);
 cvklu_data *cvklu_setup_data( const char *FileLocation, int *NumberOfFields, char ***FieldNames);
-void dengo_set_initial_conditions( double density, double T0, int NUM, double **y_host, double** var_host );
+void dengo_set_initial_conditions( double density, double T0, double fH2, int NUM, double **y_host, double** var_host );
 void dengo_set_additional_constant( double denisty, double temperature, int NUM, double **y_host, double **temperature_array, double **density_array, double **h2_optical_depth_approx );
 
 #endif

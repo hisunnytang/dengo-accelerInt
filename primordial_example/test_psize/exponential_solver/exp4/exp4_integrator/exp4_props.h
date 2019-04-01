@@ -17,7 +17,7 @@ namespace exp4 {
 #include <stdio.h>
 
 //if defined, uses (I - h * Hm)^-1 to smooth the krylov error vector
-//#define USE_SMOOTHED_ERROR
+#define USE_SMOOTHED_ERROR
 //max order of the phi functions (i.e. for error estimation)
 
 //! max order of the phi functions (for error estimation)

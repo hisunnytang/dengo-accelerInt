@@ -23,9 +23,9 @@
         /*! Relative solver tolerance */
         #define RTOL (1e-6)
         /*! Solver timestep (may be used to force multiple timesteps per global integration step) */
-        #define t_step (1e-6)
+//        #define t_step (1e-6)
         /*! Global integration timestep */
-        #define end_time (1e-3)
+//        #define end_time (1e-3)
 
         /*! Machine precision constant. */
         #define EPS DBL_EPSILON
