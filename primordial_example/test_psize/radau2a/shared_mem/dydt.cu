@@ -514,8 +514,6 @@ __device__ void dydt (const double t, const double pres, const double * __restri
 
   int tid = threadIdx.x + blockDim.x * blockIdx.x;
 //  int NSPECIES = 10;
-  const int NRATE    = 23;
-  const int NCOOL    = 26;
 
   double * local_reaction_rates = d_mem->reaction_rates;
   double * local_cooling_rates  = d_mem->cooling_rates ;
